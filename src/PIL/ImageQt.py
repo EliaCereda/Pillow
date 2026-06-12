@@ -34,6 +34,7 @@ if TYPE_CHECKING:
 
 qt_version: str | None
 qt_versions = [
+    ["5", "PyQt5"],
     ["6", "PyQt6"],
     ["side6", "PySide6"],
 ]
@@ -43,7 +44,10 @@ qt_versions.sort(key=lambda version: version[1] in sys.modules, reverse=True)
 for version, qt_module in qt_versions:
     try:
         qRgba: Callable[[int, int, int, int], int]
-        if qt_module == "PyQt6":
+        if qt_module == "PyQt5":
+            from PyQt5.QtCore import QBuffer, QByteArray, QIODevice
+            from PyQt5.QtGui import QImage, QPixmap, qRgba
+        elif qt_module == "PyQt6":
             from PyQt6.QtCore import QBuffer, QByteArray, QIODevice
             from PyQt6.QtGui import QImage, QPixmap, qRgba
         elif qt_module == "PySide6":
@@ -163,7 +167,7 @@ def _toqclass_helper(im: Image.Image | str | QByteArray) -> dict[str, Any]:
     elif im.mode == "RGBA":
         data = im.tobytes("raw", "BGRA")
         format = getattr(qt_format, "Format_ARGB32")
-    elif im.mode == "I;16":
+    elif im.mode == "I;16" and hasattr(qt_format, "Format_Grayscale16"):  # Qt 5.13+
         im = im.point(lambda i: i * 256)
 
         format = getattr(qt_format, "Format_Grayscale16")
