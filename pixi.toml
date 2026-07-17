@@ -2,9 +2,8 @@
 name = "pillow"
 version = "12.3.0.dev0"
 
-[package.build.backend]
-name = "pixi-build-python"
-version = "0.5.*"
+[package.build]
+backend = { name = "pixi-build-python", version = ">=0.5,<1.0" }
 
 [package.build.config]
 # Pillow has C extensions: build per-platform, not noarch.
